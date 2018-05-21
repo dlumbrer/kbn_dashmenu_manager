@@ -7,13 +7,14 @@ export default function (server) {
   const basePath = server.config().get('server.basePath');
 
   server.route({
-    path: '/api/malice/example',
+    path: '/api/kbn_dashmenu_management/example',
     method: 'GET',
     handler(req, reply) {
       reply({ time: (new Date()).toISOString() });
     }
   });
 
+  //Get Indices
   server.route({
     path: '/api/get_indices',
     method: 'GET',
@@ -35,6 +36,7 @@ export default function (server) {
     }
   })
 
+  //Get Kibana Dashboards
   server.route({
     path: '/api/get_dashboards',
     method: 'GET',
@@ -42,7 +44,7 @@ export default function (server) {
   
         let config = {
             index: ".kibana",
-            size: 5,
+            size: 1000,
             body: {
               "query": {
                 "bool": {
@@ -67,6 +69,28 @@ export default function (server) {
             reply({dashboards: resp.hits.hits});
         });
   
+    }
+  });
+
+  //Get the metadashboard
+  server.route({
+    path: '/api/get_metadashboard',
+    method: 'GET',
+    handler(req, reply) {
+        let config = {
+            index: ".kibana",
+            size: 1000,
+            body: {
+              "query": {
+                "terms": {
+                    "_id": [ "metadashboard" ] 
+                }
+              }
+            }
+        };
+        call('search', config).then(function (resp) {
+            reply({metadashboard: resp.hits.hits});
+        });
     }
   });
 

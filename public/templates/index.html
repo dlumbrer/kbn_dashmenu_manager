@@ -1,13 +1,89 @@
-<div class="container" ng-controller="maliceHelloWorld">
+<div class="container" ng-controller="mainController">
   <div class="row">
-    <div class="col-12-sm">
-      <div class="well">
-        <h2>Congratulations</h2>
-        <p class="lead">You've successfully created your first Kibana Plugin!</p>
-      </div>
+    <div class="col-12-sm well">
       <h1>{{ title }}</h1>
       <p class="lead">{{ description }}</p>
       <p>The current time is {{ currentTime }}</p>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col-md-8">
+      <h4>When finished editing the menu, please update it!</h4>
+    </div>
+    <div class="col-md-4">  
+      <button ng-click="updateMenu()" class="btn btn-success">Update menu</button>
+    </div>
+  </div>
+  <hr>
+  <div class="row">
+    <div class="col-md-6">
+      <h3>Current menu:</h3>
+      <button class="btn btn-primary" ng-click="addItem('root')" class="list-group-item-heading" style="margin-bottom: 10px;">Add root item</button>
+      <a href="" class="list-group-item" ng-click="addItem(key)" ng-repeat="(key, value) in metadashboard">
+        <div ng-if="!isDict(value)">
+            <h4 class="list-group-item-heading">{{key}}: {{value}}</h4>
+        </div>
+        <div ng-if="isDict(value)">
+            <h4 class="list-group-item-heading">{{key}}</h4>
+            <ul class="list-group">
+                <li class="list-group-item" ng-repeat="(keyson, valueson) in value">{{keyson}}: {{valueson}}</li>
+            </ul>
+            <button class="list-group-item-text btn btn-primary">Add subitem to {{key}}</button>
+        </div>
+      </a>
+      <br>
+      <hr>
+      <pre>{{metadashboard | json}}</pre>
+    </div>
+    <div class="col-md-6">
+        <div ng-show="simpleAdding">
+            <button type="button" class="close" aria-label="Close" ng-click="simpleAdding = false">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h3>Add Simple item to {{currentParent}}:</h3>
+            <form>
+                <div class="form-group">
+                  <label for="simpleTitle">Title</label>
+                  <input class="form-control" id="simpleTitle" ng-model="simpleTitleSelected" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                  <label for="exampleFormControlSelect1">Dashboard</label>
+                  <select class="form-control" ng-model="simpleDashboardSelected">
+                    <option ng-repeat="dash in dashboards" value="{{dash._source.dashboard.title}}">{{dash._source.dashboard.title}}</option>
+                  </select>
+                </div>
+                <button ng-click="addSimple()" class="btn btn-primary">Add</button>
+            </form>
+        </div>
+        
+        <div ng-show="complexAdding">
+            <hr>
+            <button type="button" class="close" aria-label="Close" ng-click="complexAdding = false">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            <h3>Add parent and child:</h3>
+            <form>
+                <div class="form-group">
+                  <label for="simpleTitle">Title</label>
+                  <input class="form-control" id="parentTitle" ng-model="parentTitleSelected" placeholder="Enter title">
+                </div>
+                <button ng-click="addParent()" class="btn btn-success">Add</button>
+            </form>
+        </div>
+        
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Available Dashboards:</h1>
+      <ul class="list-group">
+        <a href="" data-dismiss="modal" class="list-group-item" ng-repeat="dash in dashboards">
+          <!--span class="badge">{{vis._source.chartType}}</span-->
+          <h4 class="list-group-item-heading">{{dash._source.dashboard.title}}</h4>
+          <!-- p class="list-group-item-text">{{vis._source.description}}</p-->
+        </a>
+      </ul>
     </div>
   </div>
 </div>

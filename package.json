@@ -1,10 +1,10 @@
 {
-  "name": "malice",
+  "name": "kbn_dashmenu_management",
   "version": "6.1.3",
-  "description": "Malice Kibana Plugin",
+  "description": "kbn_dashmenu_management Kibana Plugin",
   "main": "index.js",
   "license": "Apache-2.0",
-  "repository": "github:maliceio/malice-kibana-plugin",
+  "repository": "github:dlumbrer/kbn_dashmenu_management",
   "kibana": {
     "version": "6.1.0",
     "templateVersion": "8.0.0"

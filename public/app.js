@@ -6,9 +6,10 @@ import 'ui/autoload/styles';
 import './less/main.less';
 import template from './templates/index.html';
 
-document.title = 'Malice - Kibana';
+document.title = 'Menu manager - Kibana';
 
 import chrome from 'ui/chrome';
+import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from 'constants';
 
 // Set Kibana dark thmeme
 
@@ -18,7 +19,7 @@ uiRoutes
   template,
   resolve: {
     currentTime($http) {
-      return $http.get('../api/malice/example').then(function (resp) {
+      return $http.get('../api/kbn_dashmenu_management/example').then(function (resp) {
         return resp.data.time;
       });
     }
@@ -26,36 +27,77 @@ uiRoutes
 });
 
 uiModules
-.get('app/malice', [])
-.controller('maliceHelloWorld', function ($scope, $route, $interval, $http, $location) {
+.get('app/kbn_dashmenu_management', [])
+.controller('mainController', function ($scope, $route, $interval, $http, $location) {
 
   const _this = this;
 
   _this.baseUrl = $location.absUrl().match(/(?:\/\w+)(?=\/)/)[0];
   _this.baseUrl = '/app' === _this.baseUrl ? '' : _this.baseUrl;
 
+  //Get all the data neccessary from ES
+  $http.get(_this.baseUrl + '/api/get_indices').then((response) => {
+    console.log("INDICES", response)
+  }, (error) => {
+    console.log(error);
+  });
 
+  $http.get(_this.baseUrl + '/api/get_dashboards').then((response) => {
+    console.log("DASHBOARDS", response)
+    $scope.dashboards = response.data.dashboards
+  }, (error) => {
+    console.log(error);
+  });
 
-    $http.get(_this.baseUrl + '/api/get_indices').then((response) => {
+  $http.get(_this.baseUrl + '/api/get_metadashboard').then((response) => {
+    console.log("METADASHBOARD", response)
+    $scope.metadashboard = response.data.metadashboard[0]._source.metadashboard
+  }, (error) => {
+    console.log(error);
+  });
+  //////////////////////////
 
-       console.log(response)
+  //Open Adding forms
+  $scope.addItem = function(key) {
+    $scope.simpleAdding = true;
+    if($scope.isDict($scope.metadashboard[key])){
+      $scope.currentParent = key;
+      $scope.complexAdding = false;
+    }else{
+      $scope.currentParent = "root";
+      $scope.complexAdding = true;
+    }
+  }
+  ///////
+
+  //Adding item
+  $scope.addSimple = function(){
+    if($scope.currentParent != "root"){
+      $scope.metadashboard[$scope.currentParent][$scope.simpleTitleSelected] = $scope.simpleDashboardSelected;
+      return
+    }
+    $scope.metadashboard[$scope.simpleTitleSelected] = $scope.simpleDashboardSelected;
+  }
+  $scope.addParent = function(){
+    $scope.metadashboard[$scope.parentTitleSelected] = {};
+  }
+
+  //Check if an item is dictionary
+  $scope.isDict = function(v) {
+    return (typeof v==='object' && v!==null && !(v instanceof Array) && !(v instanceof Date))
+  }
+
+  //Update menu
+  $scope.updateMenu = function(){
+    $http.post('/api/update_menu', $scope.metadashboard).then((response) => {
+      console.log("RESPUESTA DEL POST", response)
     }, (error) => {
-
-        console.log(error);
+      console.log(error);
     });
+  }
 
-    $http.get(_this.baseUrl + '/api/get_dashboards').then((response) => {
-
-      console.log("DASHBOARDS", response)
-    }, (error) => {
-
-        console.log(error);
-    });
-
-
-
-  $scope.title = 'Malice';
-  $scope.description = 'Malice Kibana Plugin';
+  $scope.title = 'Custom menu manager';
+  $scope.description = 'kbn_dashmenu_management Plugin';
 
   const currentTime = moment($route.current.locals.currentTime);
   $scope.currentTime = currentTime.format('HH:mm:ss');
