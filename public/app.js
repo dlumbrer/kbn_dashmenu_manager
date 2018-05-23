@@ -89,8 +89,64 @@ uiModules
 
   //Update menu
   $scope.updateMenu = function(){
-    $http.post('/api/update_menu', $scope.metadashboard).then((response) => {
+    //Create new mapping
+    var menuMapping = {
+      "properties": {
+        "metadashboard" : {
+          "properties": {
+            "git" : {
+              "type": "text"
+            },
+            "help" : {
+              "type": "text"
+            },
+            "jira" : {
+              "properties": {
+                "overview" : {
+                  "type": "text"
+                },
+                "help" : {
+                  "type": "text"
+                }
+              }
+            },
+            "jola" : {
+              "type": "text"
+            }
+          }
+        }
+      }
+    }
+
+    var newMapping = {"properties": {"metadashboard" : {"properties": {}}}};
+
+    for (var k in $scope.metadashboard){
+      if($scope.isDict($scope.metadashboard[k])){
+        newMapping.properties.metadashboard.properties[k] = {"properties": {}}
+        for (var i in $scope.metadashboard[k]){
+          newMapping.properties.metadashboard.properties[k].properties[i] = {"type": "text"}
+        }
+      }else{
+        newMapping.properties.metadashboard.properties[k] = {"type": "text"}
+      }
+    }
+
+    console.log("NEW MAPPING", newMapping);
+
+    
+
+    $http.post(_this.baseUrl + '/api/update_mapping', newMapping).then((response) => {
       console.log("RESPUESTA DEL POST", response)
+
+      var newMetadashboard = {
+        "metadashboard": $scope.metadashboard
+      }
+
+      $http.post(_this.baseUrl + '/api/update_metadashboard', newMetadashboard).then((response) => {
+        console.log("RESPUESTA DEL POST 2", response)
+      }, (error) => {
+        console.log(error);
+      });
     }, (error) => {
       console.log(error);
     });
