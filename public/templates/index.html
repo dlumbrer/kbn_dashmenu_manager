@@ -20,18 +20,23 @@
     <div class="col-md-6">
       <h3>Current menu:</h3>
       <button class="btn btn-primary" ng-click="addItem('root')" class="list-group-item-heading" style="margin-bottom: 10px;">Add root item</button>
-      <a href="" class="list-group-item" ng-click="addItem(key)" ng-repeat="(key, value) in metadashboard">
+      <li class="list-group-item" ng-repeat="(key, value) in metadashboard">
         <div ng-if="!isDict(value)">
-            <h4 class="list-group-item-heading">{{key}}: {{value}}</h4>
+            <h4 class="list-group-item-heading"><b>{{key}}</b> - <em>{{value}}</em>
+              <a href="" ng-click="editItem(key, value)" style="float: right">Edit</a>
+            </h4>
         </div>
         <div ng-if="isDict(value)">
-            <h4 class="list-group-item-heading">{{key}}</h4>
+            <h4 class="list-group-item-heading"><b>{{key}}</b></h4>
             <ul class="list-group">
-                <li class="list-group-item" ng-repeat="(keyson, valueson) in value">{{keyson}}: {{valueson}}</li>
+                <li class="list-group-item" ng-repeat="(keyson, valueson) in value"><b>{{keyson}}</b> - <em>{{valueson}}</em>
+                  <a href="" ng-click="editItem(key, value, keyson, valueson)" style="float: right">Edit</a>
+                </li>
             </ul>
-            <button class="list-group-item-text btn btn-primary">Add subitem to {{key}}</button>
+            <button ng-click="addItem(key)" class="list-group-item-text btn btn-primary">Add subitem to {{key}}</button>
+            <a href="" ng-click="editItem(key, value)" style="float: right; font-size: 1.3em">Edit</a>
         </div>
-      </a>
+      </li>
       <br>
       <hr>
       <pre>{{metadashboard | json}}</pre>
@@ -71,19 +76,28 @@
                 <button ng-click="addParent()" class="btn btn-success">Add</button>
             </form>
         </div>
-        
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Available Dashboards:</h1>
-      <ul class="list-group">
-        <a href="" data-dismiss="modal" class="list-group-item" ng-repeat="dash in dashboards">
-          <!--span class="badge">{{vis._source.chartType}}</span-->
-          <h4 class="list-group-item-heading">{{dash._source.dashboard.title}}</h4>
-          <!-- p class="list-group-item-text">{{vis._source.description}}</p-->
-        </a>
-      </ul>
+
+        <div ng-show="editItemForm">
+          <hr>
+          <button type="button" class="close" aria-label="Close" ng-click="editItemForm = false">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          <h3>Edit item:</h3>
+          <form>
+              <div class="form-group">
+                <label for="simpleTitle">Title</label>
+                <input class="form-control" id="parentTitle" ng-model="editTitleSelected" placeholder="Enter title">
+              </div>
+              <div class="form-group" ng-show="editNotDict">
+                <label for="exampleFormControlSelect1">Dashboard</label>
+                <select class="form-control" ng-model="editDashboardSelected">
+                  <option ng-repeat="dash in dashboards" value="{{dash._source.dashboard.title}}">{{dash._source.dashboard.title}}</option>
+                </select>
+              </div>
+              <button ng-click="deleteItem()" class="btn btn-danger">Delete</button>
+              <button ng-click="saveEditItem()" class="btn btn-success">Save</button>
+          </form>
+        </div>
     </div>
   </div>
 </div>

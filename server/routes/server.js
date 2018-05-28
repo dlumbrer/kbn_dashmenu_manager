@@ -184,17 +184,31 @@ export default function (server) {
     path: '/api/update_metadashboard',
     method: 'POST',
     handler(req, reply) {
-        console.log(req.payload)
         let config = {
             index: ".kibana",
             type: "doc",
             id: "metadashboard",
-            body:  {
-                doc: req.payload
-            }
+            body: req.payload
         };
 
-        client.update(config).then(function (resp) {
+        client.create(config).then(function (resp) {
+            reply("OK");
+        });
+    }
+  });
+
+  //Put new metadashboard
+  server.route({
+    path: '/api/delete_metadashboard',
+    method: 'POST',
+    handler(req, reply) {
+        let config = {
+            index: ".kibana",
+            type: "doc",
+            id: "metadashboard"
+        };
+
+        client.delete(config).then(function (resp) {
             reply("OK");
         });
     }

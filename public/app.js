@@ -59,6 +59,7 @@ uiModules
 
   //Open Adding forms
   $scope.addItem = function(key) {
+    $scope.editItemForm = false;
     $scope.simpleAdding = true;
     if($scope.isDict($scope.metadashboard[key])){
       $scope.currentParent = key;
@@ -73,14 +74,55 @@ uiModules
   //Adding item
   $scope.addSimple = function(){
     if($scope.currentParent != "root"){
-      $scope.metadashboard[$scope.currentParent][$scope.simpleTitleSelected] = $scope.simpleDashboardSelected;
+      $scope.metadashboard[$scope.currentParent][$scope.simpleTitleSelected] = $scope.simpleDashboardSelected.replace(/ /g,"-");
       return
     }
-    $scope.metadashboard[$scope.simpleTitleSelected] = $scope.simpleDashboardSelected;
+    $scope.metadashboard[$scope.simpleTitleSelected] = $scope.simpleDashboardSelected.replace(/ /g,"-");
   }
   $scope.addParent = function(){
     $scope.metadashboard[$scope.parentTitleSelected] = {};
   }
+
+  //Edit item form
+  $scope.editItem = function(key, value, keyson, valueson){
+    $scope.simpleAdding = false;
+    $scope.complexAdding = false;
+    $scope.editItemForm = true;
+    //Check if dict in order to show the dashboard list
+    $scope.editNotDict = !$scope.isDict(value)
+    if(keyson && valueson){
+      $scope.editParentSelected = key;
+      $scope.editTitleSelected = keyson;
+      $scope.prevEditTitleSelected = keyson;
+      $scope.editDashboardSelected = valueson.replace("-", " ");
+      return
+    }
+    $scope.editParentSelected = undefined;
+    $scope.editTitleSelected = key;
+    $scope.prevEditTitleSelected = key;
+    $scope.editDashboardSelected = value.replace("-", " ");
+  }
+
+  //Save Edit Item
+  $scope.saveEditItem = function(){
+    //Change new key and delete oldkey
+    if($scope.editTitleSelected != $scope.prevEditTitleSelected){
+      Object.defineProperty($scope.metadashboard, $scope.editTitleSelected,
+        Object.getOwnPropertyDescriptor($scope.metadashboard, $scope.prevEditTitleSelected));
+      delete $scope.metadashboard[$scope.prevEditTitleSelected];
+      return
+    }
+    //Check if it is a son or is a root item
+    if($scope.editParentSelected){
+      $scope.metadashboard[$scope.editParentSelected][$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-");
+      return
+    }
+    $scope.metadashboard[$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-");
+  }
+
+  //Delete item
+
+
 
   //Check if an item is dictionary
   $scope.isDict = function(v) {
@@ -89,35 +131,6 @@ uiModules
 
   //Update menu
   $scope.updateMenu = function(){
-    //Create new mapping
-    var menuMapping = {
-      "properties": {
-        "metadashboard" : {
-          "properties": {
-            "git" : {
-              "type": "text"
-            },
-            "help" : {
-              "type": "text"
-            },
-            "jira" : {
-              "properties": {
-                "overview" : {
-                  "type": "text"
-                },
-                "help" : {
-                  "type": "text"
-                }
-              }
-            },
-            "jola" : {
-              "type": "text"
-            }
-          }
-        }
-      }
-    }
-
     var newMapping = {"properties": {"metadashboard" : {"properties": {}}}};
 
     for (var k in $scope.metadashboard){
@@ -135,18 +148,24 @@ uiModules
 
     
 
-    $http.post(_this.baseUrl + '/api/update_mapping', newMapping).then((response) => {
-      console.log("RESPUESTA DEL POST", response)
-
-      var newMetadashboard = {
-        "metadashboard": $scope.metadashboard
-      }
-
-      $http.post(_this.baseUrl + '/api/update_metadashboard', newMetadashboard).then((response) => {
-        console.log("RESPUESTA DEL POST 2", response)
+    $http.post(_this.baseUrl + '/api/delete_metadashboard').then((response) => {
+      console.log("RESPUESTA DEL POST DELETE METADASHBOARD", response)
+      //First delete metadashboard
+      $http.post(_this.baseUrl + '/api/update_mapping', newMapping).then((response) => {
+        console.log("RESPUESTA DEL POST MAPPINGS METADASHBOARD", response)
+        var newMetadashboard = {
+          "metadashboard": $scope.metadashboard
+        }
+        //Then, update metadashboard
+        $http.post(_this.baseUrl + '/api/update_metadashboard', newMetadashboard).then((response) => {
+          console.log("RESPUESTA DEL POST PUT METADASHBOARD", response)
+        }, (error) => {
+          console.log(error);
+        });
       }, (error) => {
         console.log(error);
       });
+      
     }, (error) => {
       console.log(error);
     });
