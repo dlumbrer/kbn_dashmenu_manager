@@ -91,6 +91,7 @@ uiModules
     //Check if dict in order to show the dashboard list
     $scope.editNotDict = !$scope.isDict(value)
     if(keyson && valueson){
+      $scope.editNotDict = true;
       $scope.editParentSelected = key;
       $scope.editTitleSelected = keyson;
       $scope.prevEditTitleSelected = keyson;
@@ -105,6 +106,7 @@ uiModules
 
   //Save Edit Item
   $scope.saveEditItem = function(){
+    $scope.editItemForm = false;
     //Change new key and delete oldkey
     if($scope.editTitleSelected != $scope.prevEditTitleSelected){
       Object.defineProperty($scope.metadashboard, $scope.editTitleSelected,
@@ -121,7 +123,15 @@ uiModules
   }
 
   //Delete item
-
+  $scope.deleteEditItem = function(){
+    $scope.editItemForm = false;
+    if($scope.editParentSelected){
+      delete $scope.metadashboard[$scope.editParentSelected][$scope.prevEditTitleSelected]
+      return
+    }
+    delete $scope.metadashboard[$scope.prevEditTitleSelected];
+    
+  }
 
 
   //Check if an item is dictionary
