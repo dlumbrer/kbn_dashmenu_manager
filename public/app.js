@@ -35,6 +35,15 @@ uiModules
   _this.baseUrl = $location.absUrl().match(/(?:\/\w+)(?=\/)/)[0];
   _this.baseUrl = '/app' === _this.baseUrl ? '' : _this.baseUrl;
 
+  //Utils funcs
+  function hideAllForms(){
+    $scope.editItemForm = false;
+    $scope.simpleAdding = false;
+    $scope.complexAdding = false;
+    $scope.confirmDeleteForm = false;
+    $scope.editNotDict = false;
+  }
+
   //Get all the data neccessary from ES
   $http.get(_this.baseUrl + '/api/get_indices').then((response) => {
     console.log("INDICES", response)
@@ -59,11 +68,10 @@ uiModules
 
   //Open Adding forms
   $scope.addItem = function(key) {
-    $scope.editItemForm = false;
+    hideAllForms();
     $scope.simpleAdding = true;
     if($scope.isDict($scope.metadashboard[key])){
       $scope.currentParent = key;
-      $scope.complexAdding = false;
     }else{
       $scope.currentParent = "root";
       $scope.complexAdding = true;
@@ -85,8 +93,7 @@ uiModules
 
   //Edit item form
   $scope.editItem = function(key, value, keyson, valueson){
-    $scope.simpleAdding = false;
-    $scope.complexAdding = false;
+    hideAllForms();
     $scope.editItemForm = true;
     //Check if dict in order to show the dashboard list
     $scope.editNotDict = !$scope.isDict(value)
@@ -104,9 +111,27 @@ uiModules
     $scope.editDashboardSelected = value.replace("-", " ");
   }
 
+  //Delete item from
+  $scope.deleteItemPrev = function(key, value, keyson, valueson){
+    hideAllForms();
+    $scope.confirmDeleteForm = true;
+    //Check if dict in order to show the dashboard list
+    $scope.editNotDict = !$scope.isDict(value)
+    if(keyson && valueson){
+      $scope.editNotDict = true;
+      $scope.editParentSelected = key;
+      $scope.editTitleSelected = keyson;
+      $scope.prevEditTitleSelected = keyson;
+      return
+    }
+    $scope.editParentSelected = undefined;
+    $scope.editTitleSelected = key;
+    $scope.prevEditTitleSelected = key;
+  }
+
   //Save Edit Item
   $scope.saveEditItem = function(){
-    $scope.editItemForm = false;
+    hideAllForms();
     //Change new key and delete oldkey
     if($scope.editTitleSelected != $scope.prevEditTitleSelected){
       Object.defineProperty($scope.metadashboard, $scope.editTitleSelected,
@@ -124,7 +149,7 @@ uiModules
 
   //Delete item
   $scope.deleteEditItem = function(){
-    $scope.editItemForm = false;
+    hideAllForms();
     if($scope.editParentSelected){
       delete $scope.metadashboard[$scope.editParentSelected][$scope.prevEditTitleSelected]
       return

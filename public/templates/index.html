@@ -23,18 +23,21 @@
       <li class="list-group-item" ng-repeat="(key, value) in metadashboard">
         <div ng-if="!isDict(value)">
             <h4 class="list-group-item-heading"><b>{{key}}</b> - <em>{{value}}</em>
-              <a href="" ng-click="editItem(key, value)" style="float: right">Edit</a>
+              <a href="" ng-click="deleteItemPrev(key, value)" style="float: right"><i class="fa fa-trash"></i></a>
+              <a href="" ng-click="editItem(key, value)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i>  </a>
             </h4>
         </div>
         <div ng-if="isDict(value)">
             <h4 class="list-group-item-heading"><b>{{key}}</b></h4>
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="(keyson, valueson) in value"><b>{{keyson}}</b> - <em>{{valueson}}</em>
-                  <a href="" ng-click="editItem(key, value, keyson, valueson)" style="float: right">Edit</a>
+                  <a href="" ng-click="deleteItemPrev(key, value, keyson, valueson)" style="float: right"><i class="fa fa-trash"></i></a>
+                  <a href="" ng-click="editItem(key, value, keyson, valueson)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
                 </li>
             </ul>
             <button ng-click="addItem(key)" class="list-group-item-text btn btn-primary">Add subitem to {{key}}</button>
-            <a href="" ng-click="editItem(key, value)" style="float: right; font-size: 1.3em">Edit</a>
+            <a href="" ng-click="deleteItemPrev(key, value)" style="float: right"><i class="fa fa-trash"></i></a>
+            <a href="" ng-click="editItem(key, value)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
         </div>
       </li>
       <br>
@@ -78,7 +81,6 @@
         </div>
 
         <div ng-show="editItemForm">
-          <hr>
           <button type="button" class="close" aria-label="Close" ng-click="editItemForm = false">
               <span aria-hidden="true">&times;</span>
           </button>
@@ -94,9 +96,17 @@
                   <option ng-repeat="dash in dashboards" value="{{dash._source.dashboard.title}}">{{dash._source.dashboard.title}}</option>
                 </select>
               </div>
-              <button ng-click="deleteEditItem()" class="btn btn-danger">Delete</button>
               <button ng-click="saveEditItem()" class="btn btn-success">Save</button>
           </form>
+        </div>
+
+        <div ng-show="confirmDeleteForm">
+          <button type="button" class="close" aria-label="Close" ng-click="confirmDeleteForm = false">
+              <span aria-hidden="true">&times;</span>
+          </button>
+          <h3>Are you sure you want to delete {{editTitleSelected}}?</h3>
+          <button ng-click="deleteEditItem()" class="btn btn-danger">Delete</button>
+          <button ng-click="confirmDeleteForm = false" class="btn">Cancel</button>
         </div>
     </div>
   </div>
