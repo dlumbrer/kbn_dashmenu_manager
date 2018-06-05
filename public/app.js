@@ -82,10 +82,10 @@ uiModules
   //Adding item
   $scope.addSimple = function(){
     if($scope.currentParent != "root"){
-      $scope.metadashboard[$scope.currentParent][$scope.simpleTitleSelected] = $scope.simpleDashboardSelected.replace(/ /g,"-");
+      $scope.metadashboard[$scope.currentParent][$scope.simpleTitleSelected] = $scope.simpleDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
       return
     }
-    $scope.metadashboard[$scope.simpleTitleSelected] = $scope.simpleDashboardSelected.replace(/ /g,"-");
+    $scope.metadashboard[$scope.simpleTitleSelected] = $scope.simpleDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
   }
   $scope.addParent = function(){
     $scope.metadashboard[$scope.parentTitleSelected] = {};
@@ -102,13 +102,13 @@ uiModules
       $scope.editParentSelected = key;
       $scope.editTitleSelected = keyson;
       $scope.prevEditTitleSelected = keyson;
-      $scope.editDashboardSelected = valueson.replace("-", " ");
+      $scope.editDashboardSelected = "dashboard:" + valueson;
       return
     }
     $scope.editParentSelected = undefined;
     $scope.editTitleSelected = key;
     $scope.prevEditTitleSelected = key;
-    $scope.editDashboardSelected = value.replace("-", " ");
+    $scope.editDashboardSelected = "dashboard:" + value;
   }
 
   //Delete item from
@@ -141,10 +141,10 @@ uiModules
     }
     //Check if it is a son or is a root item
     if($scope.editParentSelected){
-      $scope.metadashboard[$scope.editParentSelected][$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-");
+      $scope.metadashboard[$scope.editParentSelected][$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
       return
     }
-    $scope.metadashboard[$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-");
+    $scope.metadashboard[$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
   }
 
   //Delete item
@@ -163,6 +163,17 @@ uiModules
   $scope.isDict = function(v) {
     return (typeof v==='object' && v!==null && !(v instanceof Array) && !(v instanceof Date))
   }
+
+  //Export metadashboard to a JSON file
+  $scope.exportJsonMetadashboard = function(){
+    var hiddenElement = document.createElement('a');
+
+    hiddenElement.href = 'data:attachment/text,' + encodeURI(JSON.stringify($scope.metadashboard));
+    hiddenElement.target = '_blank';
+    hiddenElement.download = 'metadashboard.json';
+    hiddenElement.click();
+  }
+
 
   //Update menu
   $scope.updateMenu = function(){

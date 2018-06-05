@@ -19,12 +19,12 @@
   <div class="row">
     <div class="col-md-6">
       <h3>Current menu:</h3>
-      <button class="btn btn-primary" ng-click="addItem('root')" class="list-group-item-heading" style="margin-bottom: 10px;">Add root item</button>
+      <h4><a ng-click="addItem('root')" class="list-group-item-heading" style="margin-bottom: 10px;"><i class="fa fa-plus"></i> Add root item</a></h4>
       <li class="list-group-item" ng-repeat="(key, value) in metadashboard">
         <div ng-if="!isDict(value)">
             <h4 class="list-group-item-heading"><b>{{key}}</b> - <em>{{value}}</em>
               <a href="" ng-click="deleteItemPrev(key, value)" style="float: right"><i class="fa fa-trash"></i></a>
-              <a href="" ng-click="editItem(key, value)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i>  </a>
+              <a href="" ng-click="editItem(key, value)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
             </h4>
         </div>
         <div ng-if="isDict(value)">
@@ -35,13 +35,15 @@
                   <a href="" ng-click="editItem(key, value, keyson, valueson)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
                 </li>
             </ul>
-            <button ng-click="addItem(key)" class="list-group-item-text btn btn-primary">Add subitem to {{key}}</button>
+            <a ng-click="addItem(key)" class="list-group-item-text"><i class="fa fa-plus"></i> Add subitem to {{key}}</a>
             <a href="" ng-click="deleteItemPrev(key, value)" style="float: right"><i class="fa fa-trash"></i></a>
             <a href="" ng-click="editItem(key, value)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
         </div>
       </li>
       <br>
       <hr>
+      <h3>JSON format:</h3>
+      <button ng-click="exportJsonMetadashboard()" class="btn btn-primary" style="margin-bottom: 10px">Export JSON</button>
       <pre>{{metadashboard | json}}</pre>
     </div>
     <div class="col-md-6">
@@ -58,7 +60,7 @@
                 <div class="form-group">
                   <label for="exampleFormControlSelect1">Dashboard</label>
                   <select class="form-control" ng-model="simpleDashboardSelected">
-                    <option ng-repeat="dash in dashboards" value="{{dash._source.dashboard.title}}">{{dash._source.dashboard.title}}</option>
+                    <option ng-repeat="dash in dashboards" value="{{dash._id}}">{{dash._source.dashboard.title}}</option>
                   </select>
                 </div>
                 <button ng-click="addSimple()" class="btn btn-primary">Add</button>
@@ -93,7 +95,7 @@
               <div class="form-group" ng-show="editNotDict">
                 <label for="exampleFormControlSelect1">Dashboard</label>
                 <select class="form-control" ng-model="editDashboardSelected">
-                  <option ng-repeat="dash in dashboards" value="{{dash._source.dashboard.title}}">{{dash._source.dashboard.title}}</option>
+                  <option ng-repeat="dash in dashboards" value="{{dash._id}}">{{dash._source.dashboard.title}}</option>
                 </select>
               </div>
               <button ng-click="saveEditItem()" class="btn btn-success">Save</button>
