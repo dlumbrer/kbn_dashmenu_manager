@@ -10,8 +10,8 @@ export default function (server) {
  
    const options = {
      url: config.get('elasticsearch.url'),
-     username: 'kibanaserver',
-     password: 'kibanaserver',
+     username: 'admin',
+     password: 'admin',
      verifySsl: config.get('elasticsearch.ssl.verificationMode') == 'none' ? false : true,
      clientCrt: config.get('elasticsearch.ssl.certificate'),
      clientKey: config.get('elasticsearch.ssl.key'),
