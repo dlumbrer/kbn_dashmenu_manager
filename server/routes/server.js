@@ -1,61 +1,66 @@
 import elasticsearch from "elasticsearch";
 import url from 'url';
+import Boom from 'boom';
 const readFile = (file) => require('fs').readFileSync(file, 'utf8');
 export default function (server) {
+
     /*
-    From quicknavi
+    This function is wrapped in order to do the ES petitions with the same user that is doing the petition to the plugin
     */
-   const es_url = server.config().get('elasticsearch.url');
-   const config = server.config();
- 
-   const options = {
-     url: config.get('elasticsearch.url'),
-     username: 'admin',
-     password: 'admin',
-     verifySsl: config.get('elasticsearch.ssl.verificationMode') == 'none' ? false : true,
-     clientCrt: config.get('elasticsearch.ssl.certificate'),
-     clientKey: config.get('elasticsearch.ssl.key'),
-     apiVersion: "_default",
-     pingTimeout: config.get('elasticsearch.pingTimeout'),
-     requestTimeout: config.get('elasticsearch.requestTimeout'),
-     keepAlive: true,
-     auth: true
-   };
- 
-   const uri = url.parse(options.url);
-   let authorization;
-   if (options.auth && options.username && options.password) {
-     uri.auth = options.username+ ':' + options.password;
-   }
- 
-   const ssl = { rejectUnauthorized: options.verifySsl };
-   if (options.clientCrt && options.clientKey) {
-     ssl.cert = readFile(options.clientCrt);
-     ssl.key = readFile(options.clientKey);
-   }
-   if (options.ca) {
-     ssl.ca = options.ca.map(readFile);
-   }
- 
-   const host = {
-     host: uri.hostname,
-     port: uri.port,
-     protocol: uri.protocol,
-     path: uri.pathname,
-     auth: uri.auth,
-     query: uri.query,
-     headers: config.get('elasticsearch.customHeaders')
-   };
- 
-   let client = new elasticsearch.Client({
-     host,
-     ssl,
-     plugins: options.plugins,
-     apiVersion: options.apiVersion,
-     keepAlive: options.keepAlive,
-     pingTimeout: options.pingTimeout,
-     requestTimeout: options.requestTimeout
-   });
+    const config_elastic = (username, password) => {
+        const es_url = server.config().get('elasticsearch.url');
+        const config = server.config();
+
+        const options = {
+            url: config.get('elasticsearch.url'),
+            username: username,
+            password: password,
+            verifySsl: config.get('elasticsearch.ssl.verificationMode') == 'none' ? false : true,
+            clientCrt: config.get('elasticsearch.ssl.certificate'),
+            clientKey: config.get('elasticsearch.ssl.key'),
+            apiVersion: "_default",
+            pingTimeout: config.get('elasticsearch.pingTimeout'),
+            requestTimeout: config.get('elasticsearch.requestTimeout'),
+            keepAlive: true,
+            auth: true
+        };
+
+        const uri = url.parse(options.url);
+        let authorization;
+        if (options.auth && options.username && options.password) {
+            uri.auth = options.username+ ':' + options.password;
+        }
+
+        const ssl = { rejectUnauthorized: options.verifySsl };
+        if (options.clientCrt && options.clientKey) {
+            ssl.cert = readFile(options.clientCrt);
+            ssl.key = readFile(options.clientKey);
+        }
+        if (options.ca) {
+            ssl.ca = options.ca.map(readFile);
+        }
+
+        const host = {
+            host: uri.hostname,
+            port: uri.port,
+            protocol: uri.protocol,
+            path: uri.pathname,
+            auth: uri.auth,
+            query: uri.query,
+            headers: config.get('elasticsearch.customHeaders')
+        };
+
+        let client = new elasticsearch.Client({
+            host,
+            ssl,
+            plugins: options.plugins,
+            apiVersion: options.apiVersion,
+            keepAlive: options.keepAlive,
+            pingTimeout: options.pingTimeout,
+            requestTimeout: options.requestTimeout
+        });
+        return client
+    }
    ////////////////////////////////////////////////
 
 
@@ -66,21 +71,26 @@ export default function (server) {
   const call = dataCluster.callWithInternalUser;
   const basePath = server.config().get('server.basePath');
 
-  server.route({
-    path: '/api/kbn_dashmenu_management/example',
-    method: 'GET',
-    handler(req, reply) {
-      reply({ time: (new Date()).toISOString() });
-    }
-  });
-
   //Get Indices
   server.route({
     path: '/api/get_indices',
     method: 'GET',
     handler(req, reply) {
-
-        call('cat.indices', {format: 'json'}).then(function (resp) {
+        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        client.cat.indices({
+            h: ['index', 'doc_count']
+        }).catch(function (err) {
+            // Catch unathourized error
+            if (err.status === 403) {
+                console.log("Forbidden")
+                reply(Boom.forbidden('invalid user'))
+                return -1;
+            } else if (err.status === -1){
+                // Other errors
+                reply(Boom.notFound('unexpected error', err))
+                return -1;
+            }
+        }).then(function (resp) {
 
             let indices = [];
 
@@ -92,7 +102,6 @@ export default function (server) {
 
             reply({indices: indices});
         });
-
     }
   })
 
@@ -119,24 +128,22 @@ export default function (server) {
               }
             }
         };
-        /*client.search(config).then(function (resp) {
-  
-            let dashboards = [];
-          
-            //console.log(resp.hits.hits)
-  
-            reply({dashboards: resp.hits.hits});
-        });*/
-  
-        call('search', config).then(function (resp) {
-  
-            let dashboards = [];
-          
-            //console.log(resp.hits.hits)
-  
+        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        client.search(config)
+        .catch(function (err) {
+            // Catch unathourized error
+            if (err.status === 403) {
+                console.log("Forbidden")
+                reply(Boom.forbidden('invalid user'))
+                return -1;
+            } else if (err.status === -1){
+                // Other errors
+                reply(Boom.notFound('unexpected error', err))
+                return -1;
+            }
+        }).then(function (resp) {
             reply({dashboards: resp.hits.hits});
         });
-  
     }
   });
 
@@ -173,7 +180,20 @@ export default function (server) {
             body: req.payload
         };
 
-        client.indices.putMapping(config).then(function (resp) {
+        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        client.indices.putMapping(config)
+        .catch(function (err) {
+            // Catch unathourized error
+            if (err.status === 403) {
+                console.log("Forbidden")
+                reply(Boom.forbidden('invalid user'))
+                return -1;
+            } else if (err.status === -1){
+                // Other errors
+                reply(Boom.notFound('unexpected error', err))
+                return -1;
+            }
+        }).then(function (resp) {
             reply("OK");
         });
     }
@@ -191,7 +211,19 @@ export default function (server) {
             body: req.payload
         };
 
-        client.create(config).then(function (resp) {
+        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        client.create(config).catch(function (err) {
+            // Catch unathourized error
+            if (err.status === 403) {
+                console.log("Forbidden")
+                reply(Boom.forbidden('invalid user'))
+                return -1;
+            } else if (err.status === -1){
+                // Other errors
+                reply(Boom.notFound('unexpected error', err))
+                return -1;
+            }
+        }).then(function (resp) {
             reply("OK");
         });
     }
@@ -208,7 +240,19 @@ export default function (server) {
             id: "metadashboard"
         };
 
-        client.delete(config).then(function (resp) {
+        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        client.delete(config).catch(function (err) {
+            // Catch unathourized error
+            if (err.status === 403) {
+                console.log("Forbidden")
+                reply(Boom.forbidden('invalid user'))
+                return -1;
+            } else if (err.status === -1){
+                // Other errors
+                reply(Boom.notFound('unexpected error', err))
+                return -1;
+            }
+        }).then(function (resp) {
             reply("OK");
         });
     }
