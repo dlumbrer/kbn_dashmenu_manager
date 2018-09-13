@@ -91,16 +91,18 @@ export default function (server) {
                 return -1;
             }
         }).then(function (resp) {
+            if(resp !== -1){
 
-            let indices = [];
+                let indices = [];
 
-            resp.forEach(function (elem) {
+                resp.forEach(function (elem) {
 
-                if ((elem.index !== '.kibana'))
-                    indices.push({id: elem.index, name: elem.index});
-            });
+                    if ((elem.index !== '.kibana'))
+                        indices.push({id: elem.index, name: elem.index});
+                });
 
-            reply({indices: indices});
+                reply({indices: indices});
+            }
         });
     }
   })
@@ -142,7 +144,9 @@ export default function (server) {
                 return -1;
             }
         }).then(function (resp) {
-            reply({dashboards: resp.hits.hits});
+            if(resp !== -1){
+                reply({dashboards: resp.hits.hits});
+            }
         });
     }
   });
@@ -194,7 +198,9 @@ export default function (server) {
                 return -1;
             }
         }).then(function (resp) {
-            reply("OK");
+            if(resp !== -1){
+                reply("OK");
+            }
         });
     }
   });
@@ -224,7 +230,9 @@ export default function (server) {
                 return -1;
             }
         }).then(function (resp) {
-            reply("OK");
+            if(resp !== -1){
+                reply("OK");
+            }
         });
     }
   });
@@ -253,7 +261,9 @@ export default function (server) {
                 return -1;
             }
         }).then(function (resp) {
-            reply("OK");
+            if(resp !== -1){
+                reply("OK");
+            }
         });
     }
   });
