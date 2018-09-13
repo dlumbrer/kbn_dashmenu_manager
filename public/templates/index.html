@@ -1,4 +1,25 @@
 <div class="container" ng-controller="mainController">
+  <div
+  class="kuiView"
+  style="background-color: #A30000"
+  ng-show="errorMessage"
+  >
+    <div
+      class="kuiViewContent kuiViewContent--constrainedWidth"
+      style="background-color: #A30000"
+    >
+      <div class="kuiNotice">
+        <h1 class="kuiTitle kuiVerticalRhythm">
+          <span class="kuiIcon kuiIcon--error fa-warning"></span>
+          {{errorCode}}
+        </h1>
+  
+        <p class="kuiText kuiVerticalRhythm">
+          {{errorDescription}}
+        </p>
+      </div>
+    </div>
+  </div>
   <div class="row">
     <div class="col-12-sm well">
       <h1>{{ title }}</h1>

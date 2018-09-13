@@ -16,14 +16,7 @@ import { SSL_OP_NO_SESSION_RESUMPTION_ON_RENEGOTIATION } from 'constants';
 uiRoutes.enable();
 uiRoutes
 .when('/', {
-  template,
-  resolve: {
-    currentTime($http) {
-      return $http.get('../api/kbn_dashmenu_management/example').then(function (resp) {
-        return resp.data.time;
-      });
-    }
-  }
+  template
 });
 
 uiModules
@@ -44,23 +37,54 @@ uiModules
     $scope.editNotDict = false;
   }
 
-  //Get all the data neccessary from ES
-  $http.get(_this.baseUrl + '/api/get_indices').then((response) => {
-    console.log("INDICES", response)
+  const showForbiddenError = () => {
+    $scope.errorMessage = true;
+    $scope.errorCode = "Error 403: Forbidden"
+    $scope.errorDescription = "You have not access to do this action, please login as a different user"
+  }
+
+  const showUnexpectedError = () => {
+    $scope.errorMessage = true;
+    $scope.errorCode = "Unexpected Error"
+    $scope.errorDescription = "Unexpected error during querying ElasticSearch"
+  } 
+
+  /////
+
+  $http.get(_this.baseUrl + '/api/get_dashboards').catch(function (err) {
+    // Catch unathourized error
+    if (err.status === 403) {
+        showForbiddenError()
+        return -1;
+    } else if (err.status === -1){
+        // Other errors
+        showUnexpectedError()
+        return -1;
+    }
+  }).then((response) => {
+    if(response !== -1){
+      console.log("Dashboards retrieved from the petition", response)
+      $scope.dashboards = response.data.dashboards
+    }
   }, (error) => {
     console.log(error);
   });
 
-  $http.get(_this.baseUrl + '/api/get_dashboards').then((response) => {
-    console.log("DASHBOARDS", response)
-    $scope.dashboards = response.data.dashboards
-  }, (error) => {
-    console.log(error);
-  });
-
-  $http.get(_this.baseUrl + '/api/get_metadashboard').then((response) => {
-    console.log("METADASHBOARD", response)
-    $scope.metadashboard = response.data.metadashboard[0]._source.metadashboard
+  $http.get(_this.baseUrl + '/api/get_metadashboard').catch(function (err) {
+    // Catch unathourized error
+    if (err.status === 403) {
+        showForbiddenError()
+        return -1;
+    } else if (err.status === -1){
+        // Other errors
+        showUnexpectedError()
+        return -1;
+    }
+  }).then((response) => {
+    if(response !== -1){
+      console.log("Metadashboard retrieved from the petition", response)
+      $scope.metadashboard = response.data.metadashboard[0]._source.metadashboard
+    }
   }, (error) => {
     console.log(error);
   });
@@ -190,27 +214,63 @@ uiModules
       }
     }
 
-    console.log("NEW MAPPING", newMapping);
+    console.log("This is the new mapping of the metadashboard", newMapping);
 
     
 
-    $http.post(_this.baseUrl + '/api/delete_metadashboard').then((response) => {
-      console.log("RESPUESTA DEL POST DELETE METADASHBOARD", response)
-      //First delete metadashboard
-      $http.post(_this.baseUrl + '/api/update_mapping', newMapping).then((response) => {
-        console.log("RESPUESTA DEL POST MAPPINGS METADASHBOARD", response)
-        var newMetadashboard = {
-          "metadashboard": $scope.metadashboard
-        }
-        //Then, update metadashboard
-        $http.post(_this.baseUrl + '/api/update_metadashboard', newMetadashboard).then((response) => {
-          console.log("RESPUESTA DEL POST PUT METADASHBOARD", response)
+    $http.post(_this.baseUrl + '/api/delete_metadashboard').catch(function (err) {
+      // Catch unathourized error
+      if (err.status === 403) {
+          showForbiddenError()
+          return -1
+      } else if (err.status === -1){
+          // Other errors
+          showUnexpectedError()
+          return -1;
+      }
+    }).then((response) => {
+      if(response !== -1){
+        console.log("Response of the metadashboard DELETE", response)
+        //First delete metadashboard
+        $http.post(_this.baseUrl + '/api/update_mapping', newMapping).catch(function (err) {
+          // Catch unathourized error
+          if (err.status === 403) {
+              showForbiddenError()
+              return -1;
+          } else if (err.status === -1){
+              // Other errors
+              showUnexpectedError()
+              return -1;
+          }
+        }).then((response) => {
+          if(response !== -1){
+            console.log("Response of the updating metadashboard mapping POST", response)
+            var newMetadashboard = {
+              "metadashboard": $scope.metadashboard
+            }
+            //Then, update metadashboard
+            $http.post(_this.baseUrl + '/api/update_metadashboard', newMetadashboard).catch(function (err) {
+              // Catch unathourized error
+              if (err.status === 403) {
+                  showForbiddenError()
+                  return -1;
+              } else if (err.status === -1){
+                  // Other errors
+                  showUnexpectedError()
+                  return -1;
+              }
+            }).then((response) => {
+              if(response !== -1){
+                console.log("Response of the updating metadashboard POST", response)
+              }
+            }, (error) => {
+              console.log(error);
+            });
+          }
         }, (error) => {
           console.log(error);
         });
-      }, (error) => {
-        console.log(error);
-      });
+      }
       
     }, (error) => {
       console.log(error);
