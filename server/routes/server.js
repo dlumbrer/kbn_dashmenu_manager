@@ -7,7 +7,7 @@ export default function (server) {
     /*
     This function is wrapped in order to do the ES petitions with the same user that is doing the petition to the plugin
     */
-    const config_elastic = (username, password) => {
+    const configElastic = (username, password) => {
         const es_url = server.config().get('elasticsearch.url');
         const config = server.config();
 
@@ -76,7 +76,7 @@ export default function (server) {
     path: '/api/get_indices',
     method: 'GET',
     handler(req, reply) {
-        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        let client = configElastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
         client.cat.indices({
             h: ['index', 'doc_count']
         }).catch(function (err) {
@@ -128,7 +128,7 @@ export default function (server) {
               }
             }
         };
-        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        let client = configElastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
         client.search(config)
         .catch(function (err) {
             // Catch unathourized error
@@ -180,7 +180,7 @@ export default function (server) {
             body: req.payload
         };
 
-        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        let client = configElastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
         client.indices.putMapping(config)
         .catch(function (err) {
             // Catch unathourized error
@@ -211,7 +211,7 @@ export default function (server) {
             body: req.payload
         };
 
-        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        let client = configElastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
         client.create(config).catch(function (err) {
             // Catch unathourized error
             if (err.status === 403) {
@@ -240,7 +240,7 @@ export default function (server) {
             id: "metadashboard"
         };
 
-        let client = config_elastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
+        let client = configElastic(req.auth.credentials._credentials.username, req.auth.credentials._credentials.password)
         client.delete(config).catch(function (err) {
             // Catch unathourized error
             if (err.status === 403) {
