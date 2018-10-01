@@ -135,23 +135,34 @@ uiModules
     $scope.editDashboardSelected = "dashboard:" + value;
   }
 
-  //Delete item from
-  $scope.deleteItemPrev = function(key, value, keyson, valueson){
+  //////////////////DELETE ITEM/////////////////////////////////////////
+  $scope.deleteItemPrev = function(n_parent, item, n_son, subitem){
     hideAllForms();
     $scope.confirmDeleteForm = true;
     //Check if dict in order to show the dashboard list
-    $scope.editNotDict = !$scope.isDict(value)
-    if(keyson && valueson){
+    $scope.editNotDict = (item.type === "entry")
+    if(subitem){
+      $scope.isSonToDelete = true;
       $scope.editNotDict = true;
-      $scope.editParentSelected = key;
-      $scope.editTitleSelected = keyson;
-      $scope.prevEditTitleSelected = keyson;
+      $scope.index_parent = n_parent;
+      $scope.deleteSelected = subitem.name;
+      $scope.index_to_delete = n_son;
       return
     }
-    $scope.editParentSelected = undefined;
-    $scope.editTitleSelected = key;
-    $scope.prevEditTitleSelected = key;
+    $scope.isSonToDelete = false;
+    $scope.deleteSelected = item.name;
+    $scope.index_to_delete = n_parent;
   }
+
+  $scope.deleteEditItem = function(){
+    hideAllForms();
+    if($scope.isSonToDelete){
+      $scope.metadashboard[$scope.index_parent].dashboards.splice($scope.index_to_delete, 1)
+      return
+    }
+    $scope.metadashboard.splice($scope.index_to_delete, 1)
+  }
+  //////////////////////////////////////////////////////////////////////////
 
   //Save Edit Item
   $scope.saveEditItem = function(){
@@ -171,16 +182,7 @@ uiModules
     $scope.metadashboard[$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
   }
 
-  //Delete item
-  $scope.deleteEditItem = function(){
-    hideAllForms();
-    if($scope.editParentSelected){
-      delete $scope.metadashboard[$scope.editParentSelected][$scope.prevEditTitleSelected]
-      return
-    }
-    delete $scope.metadashboard[$scope.prevEditTitleSelected];
-    
-  }
+
 
 
   //Check if an item is dictionary
@@ -286,4 +288,5 @@ uiModules
     $scope.currentTime = currentTime.add(1, 'second').format('HH:mm:ss');
   }, 1000);
   $scope.$watch('$destroy', unsubscribe);
+
 });
