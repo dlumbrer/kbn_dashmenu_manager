@@ -223,6 +223,26 @@ uiModules
   }
   //////////////////////////////////////////////////////////////////////////
 
+  /////////////////////////REORDER ITEM/////////////////////////////////////
+
+  $scope.reorderItem = (i, item, n_parent, subitem, n_son) => {
+    if(subitem){
+      if ($scope.metadashboard[n_parent].dashboards[n_son + i]){
+        let item_aux = $scope.metadashboard[n_parent].dashboards[n_son + i];
+        $scope.metadashboard[n_parent].dashboards[n_son + i] = $scope.metadashboard[n_parent].dashboards[n_son]
+        $scope.metadashboard[n_parent].dashboards[n_son] = item_aux
+      }
+      return
+    }
+    if ($scope.metadashboard[n_parent + i]) {
+      let item_aux = $scope.metadashboard[n_parent + i];
+      $scope.metadashboard[n_parent + i] = $scope.metadashboard[n_parent]
+      $scope.metadashboard[n_parent] = item_aux
+    }
+    return
+  }
+
+  //////////////////////////////////////////////////////////////////////////
 
 
   //Export metadashboard to a JSON file

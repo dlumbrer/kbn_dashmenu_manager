@@ -43,17 +43,21 @@
       <h4><a ng-click="addItem('', 'root')" class="list-group-item-heading" style="margin-bottom: 10px;"><i class="fa fa-plus"></i> Add root item</a></h4>
       <li class="list-group-item" ng-repeat="(n, item) in metadashboard">
         <div ng-if="item.type === 'entry'">
-            <h4 class="list-group-item-heading"><b>{{item.name}} ({{n}})</b> - <em>{{item.link}}</em>
+            <h4 class="list-group-item-heading"><b>{{item.title}} ({{n}})</b> - <em>{{item.name}}</em>
               <a href="" ng-click="deleteItemPrev(n, item)" style="float: right"><i class="fa fa-trash"></i></a>
               <a href="" ng-click="editItem(n, item)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
+              <a href="" ng-click="reorderItem(-1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-caret-up"></i></a>
+              <a href="" ng-click="reorderItem(1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-caret-down"></i></a>
             </h4>
         </div>
         <div ng-if="item.type === 'menu'">
-            <h4 class="list-group-item-heading"><b>{{item.name}} ({{n}})</b></h4>
+            <h4 class="list-group-item-heading"><b>{{item.title}} ({{n}})</b></h4>
             <ul class="list-group">
-                <li class="list-group-item" ng-repeat="(n_son, subitem) in item.dashboards"><b>{{subitem.name}}</b> - <em>{{subitem.link}}</em>
+                <li class="list-group-item" ng-repeat="(n_son, subitem) in item.dashboards"><b>{{subitem.title}}</b> - <em>{{subitem.name}}</em>
                   <a href="" ng-click="deleteItemPrev(n, item, n_son, subitem)" style="float: right"><i class="fa fa-trash"></i></a>
                   <a href="" ng-click="editItem(n, item, n_son, subitem)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
+                  <a href="" ng-click="reorderItem(-1, item, n, subitem, n_son)" style="margin-right: 10px; float: right"><i class="fa fa-caret-up"></i></a>
+                  <a href="" ng-click="reorderItem(1, item, n, subitem, n_son)" style="margin-right: 10px; float: right"><i class="fa fa-caret-down"></i></a>
                 </li>
             </ul>
             <a ng-click="addItem(n, item)" class="list-group-item-text"><i class="fa fa-plus"></i> Add subitem to {{item.name}}</a>
