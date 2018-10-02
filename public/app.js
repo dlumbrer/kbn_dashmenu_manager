@@ -90,30 +90,54 @@ uiModules
   });
   //////////////////////////
 
-  //Open Adding forms
-  $scope.addItem = function(key) {
+
+  /////////////////////// Adding forms //////////////////
+  $scope.addItem = function(n_parent, item) {
     hideAllForms();
     $scope.simpleAdding = true;
-    if($scope.isDict($scope.metadashboard[key])){
-      $scope.currentParent = key;
-    }else{
-      $scope.currentParent = "root";
+    if(item === "root"){
+      $scope.currentParentName = "root";
       $scope.complexAdding = true;
+    }else{
+      $scope.indexParent = n_parent;
+      $scope.currentParentName = item.name;
+      $scope.currentParent = item;
     }
   }
-  ///////
 
-  //Adding item
+  // Add item that is a link (entry)
   $scope.addSimple = function(){
-    if($scope.currentParent != "root"){
-      $scope.metadashboard[$scope.currentParent][$scope.simpleTitleSelected] = $scope.simpleDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
+    // Build the object
+    let dash = {
+      title: $scope.simpleTitleSelected,
+      name: $scope.simpleNameSelected,
+      description: $scope.simpleDescriptionSelected,
+      type: "entry",
+      link: $scope.simpleDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
+    }
+
+    // Adding to a parent
+    if($scope.currentParentName !== "root"){
+      $scope.metadashboard[$scope.indexParent].dashboards.push(dash)
       return
     }
-    $scope.metadashboard[$scope.simpleTitleSelected] = $scope.simpleDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
+    //Adding to the root menu
+    $scope.metadashboard.push(dash)
   }
+
+  // Add item that will have submenu
   $scope.addParent = function(){
-    $scope.metadashboard[$scope.parentTitleSelected] = {};
+    let dash = {
+      title: $scope.parentTitleSelected,
+      name: $scope.parentNameSelected,
+      description: $scope.parentDescriptionSelected,
+      type: "menu",
+      dashboards: []
+    }
+    $scope.metadashboard.push(dash)
   }
+
+  //////////////////////////////////////////////////////
 
   //Edit item form
   $scope.editItem = function(key, value, keyson, valueson){
@@ -180,14 +204,6 @@ uiModules
       return
     }
     $scope.metadashboard[$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
-  }
-
-
-
-
-  //Check if an item is dictionary
-  $scope.isDict = function(v) {
-    return (typeof v==='object' && v!==null && !(v instanceof Array) && !(v instanceof Date))
   }
 
   //Export metadashboard to a JSON file

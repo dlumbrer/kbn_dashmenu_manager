@@ -40,7 +40,7 @@
   <div class="row">
     <div class="col-md-6">
       <h3>Current menu:</h3>
-      <h4><a ng-click="addItem('root')" class="list-group-item-heading" style="margin-bottom: 10px;"><i class="fa fa-plus"></i> Add root item</a></h4>
+      <h4><a ng-click="addItem('', 'root')" class="list-group-item-heading" style="margin-bottom: 10px;"><i class="fa fa-plus"></i> Add root item</a></h4>
       <li class="list-group-item" ng-repeat="(n, item) in metadashboard">
         <div ng-if="item.type === 'entry'">
             <h4 class="list-group-item-heading"><b>{{item.name}} ({{n}})</b> - <em>{{item.link}}</em>
@@ -56,7 +56,7 @@
                   <a href="" ng-click="editItem(key, value, keyson, valueson)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
                 </li>
             </ul>
-            <a ng-click="addItem(key)" class="list-group-item-text"><i class="fa fa-plus"></i> Add subitem to {{item.name}}</a>
+            <a ng-click="addItem(n, item)" class="list-group-item-text"><i class="fa fa-plus"></i> Add subitem to {{item.name}}</a>
         </div>
       </li>
       <br>
@@ -70,11 +70,19 @@
             <button type="button" class="close" aria-label="Close" ng-click="simpleAdding = false">
                 <span aria-hidden="true">&times;</span>
             </button>
-            <h3>Add Simple item to {{currentParent}}:</h3>
+            <h3>Add link item to {{currentParentName}}:</h3>
             <form>
                 <div class="form-group">
                   <label for="simpleTitle">Title</label>
                   <input class="form-control" id="simpleTitle" ng-model="simpleTitleSelected" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                  <label for="simpleName">Name</label>
+                  <input class="form-control" id="simpleName" ng-model="simpleNameSelected" placeholder="Enter name">
+                </div>
+                <div class="form-group">
+                  <label for="simpleDescription">Description</label>
+                  <input class="form-control" id="simpleDescription" ng-model="simpleDescriptionSelected" placeholder="Enter description">
                 </div>
                 <div class="form-group">
                   <label for="exampleFormControlSelect1">Dashboard</label>
@@ -91,11 +99,19 @@
             <button type="button" class="close" aria-label="Close" ng-click="complexAdding = false">
                 <span aria-hidden="true">&times;</span>
             </button>
-            <h3>Add parent and child:</h3>
+            <h3>Add item with submenu:</h3>
             <form>
                 <div class="form-group">
-                  <label for="simpleTitle">Title</label>
+                  <label for="parentTitle">Title</label>
                   <input class="form-control" id="parentTitle" ng-model="parentTitleSelected" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                  <label for="parentName">Name</label>
+                  <input class="form-control" id="parentName" ng-model="parentNameSelected" placeholder="Enter title">
+                </div>
+                <div class="form-group">
+                  <label for="parentDescription">Description</label>
+                  <input class="form-control" id="parentDescription" ng-model="parentDescriptionSelected" placeholder="Enter title">
                 </div>
                 <button ng-click="addParent()" class="btn btn-success">Add</button>
             </form>
