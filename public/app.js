@@ -238,22 +238,7 @@ uiModules
 
   //Update menu
   $scope.updateMenu = function(){
-    var newMapping = {"properties": {"metadashboard" : {"properties": {}}}};
-
-    for (var k in $scope.metadashboard){
-      if($scope.isDict($scope.metadashboard[k])){
-        newMapping.properties.metadashboard.properties[k] = {"properties": {}}
-        for (var i in $scope.metadashboard[k]){
-          newMapping.properties.metadashboard.properties[k].properties[i] = {"type": "text"}
-        }
-      }else{
-        newMapping.properties.metadashboard.properties[k] = {"type": "text"}
-      }
-    }
-
-    console.log("This is the new mapping of the metadashboard", newMapping);
-
-    
+    var dynamicMapping = {"properties": {"metadashboard" : {"type": "object", "dynamic": "true"}}};
 
     $http.post(_this.baseUrl + '/api/delete_metadashboard').catch(function (err) {
       // Catch unathourized error
@@ -269,7 +254,7 @@ uiModules
       if(response !== -1){
         console.log("Response of the metadashboard DELETE", response)
         //First delete metadashboard
-        $http.post(_this.baseUrl + '/api/update_mapping', newMapping).catch(function (err) {
+        $http.post(_this.baseUrl + '/api/update_mapping', dynamicMapping).catch(function (err) {
           // Catch unathourized error
           if (err.status === 403) {
               showForbiddenError()
