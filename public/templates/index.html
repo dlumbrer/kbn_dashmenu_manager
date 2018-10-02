@@ -45,7 +45,7 @@
         <div ng-if="item.type === 'entry'">
             <h4 class="list-group-item-heading"><b>{{item.name}} ({{n}})</b> - <em>{{item.link}}</em>
               <a href="" ng-click="deleteItemPrev(n, item)" style="float: right"><i class="fa fa-trash"></i></a>
-              <a href="" ng-click="editItem(key, value)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
+              <a href="" ng-click="editItem(n, item)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
             </h4>
         </div>
         <div ng-if="item.type === 'menu'">
@@ -53,7 +53,7 @@
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="(n_son, subitem) in item.dashboards"><b>{{subitem.name}}</b> - <em>{{subitem.link}}</em>
                   <a href="" ng-click="deleteItemPrev(n, item, n_son, subitem)" style="float: right"><i class="fa fa-trash"></i></a>
-                  <a href="" ng-click="editItem(key, value, keyson, valueson)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
+                  <a href="" ng-click="editItem(n, item, n_son, subitem)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
                 </li>
             </ul>
             <a ng-click="addItem(n, item)" class="list-group-item-text"><i class="fa fa-plus"></i> Add subitem to {{item.name}}</a>
@@ -124,10 +124,18 @@
           <h3>Edit item:</h3>
           <form>
               <div class="form-group">
-                <label for="simpleTitle">Title</label>
-                <input class="form-control" id="parentTitle" ng-model="editTitleSelected" placeholder="Enter title">
+                <label for="editTitle">Title</label>
+                <input class="form-control" id="editTitle" ng-model="editTitleSelected" placeholder="Enter title">
               </div>
-              <div class="form-group" ng-show="editNotDict">
+              <div class="form-group">
+                <label for="editName">Name</label>
+                <input class="form-control" id="editName" ng-model="editNameSelected" placeholder="Enter title">
+              </div>
+              <div class="form-group">
+                <label for="editDescription">Description</label>
+                <input class="form-control" id="editDescription" ng-model="editDescriptionSelected" placeholder="Enter title">
+              </div>
+              <div class="form-group">
                 <label for="exampleFormControlSelect1">Dashboard</label>
                 <select class="form-control" ng-model="editDashboardSelected">
                   <option ng-repeat="dash in dashboards" value="{{dash._id}}">{{dash._source.dashboard.title}}</option>

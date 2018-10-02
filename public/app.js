@@ -139,25 +139,60 @@ uiModules
 
   //////////////////////////////////////////////////////
 
-  //Edit item form
-  $scope.editItem = function(key, value, keyson, valueson){
+  //////////////////DELETE ITEM/////////////////////////////////////////
+  $scope.editItem = function(n_parent, item, n_son, subitem){
     hideAllForms();
     $scope.editItemForm = true;
-    //Check if dict in order to show the dashboard list
-    $scope.editNotDict = !$scope.isDict(value)
-    if(keyson && valueson){
-      $scope.editNotDict = true;
-      $scope.editParentSelected = key;
-      $scope.editTitleSelected = keyson;
-      $scope.prevEditTitleSelected = keyson;
-      $scope.editDashboardSelected = "dashboard:" + valueson;
+    if(subitem){
+      // Is a child so we have to define the parent
+      $scope.indexParent = n_parent;
+      $scope.currentParent = item;
+      $scope.indexSon = n_son;
+      $scope.currentSon = subitem;
+      $scope.editTitleSelected = subitem.title;
+      $scope.editNameSelected = subitem.name;
+      $scope.editDescriptionSelected = subitem.description;
+      $scope.editDashboardSelected = "dashboard:" + subitem.link;
       return
     }
-    $scope.editParentSelected = undefined;
-    $scope.editTitleSelected = key;
-    $scope.prevEditTitleSelected = key;
-    $scope.editDashboardSelected = "dashboard:" + value;
+    // Is a parent just is a link
+    $scope.indexParent = n_parent;
+    $scope.currentParent = item;
+    $scope.indexSon = undefined;
+    $scope.currentSon = undefined;
+    $scope.editTitleSelected = item.title;
+    $scope.editNameSelected = item.name;
+    $scope.editDescriptionSelected = item.description;
+    $scope.editDashboardSelected = "dashboard:" + item.link;
   }
+
+  //Save Edit Item
+  $scope.saveEditItem = function(){
+    hideAllForms();
+    if ($scope.currentSon){
+      $scope.metadashboard[$scope.indexParent].dashboards[$scope.indexSon] = {
+        title: $scope.editTitleSelected,
+        name: $scope.editNameSelected,
+        description: $scope.editDescriptionSelected,
+        type: "entry",
+        link: $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
+      }
+    }else{
+      $scope.metadashboard[$scope.indexParent] = {
+        title: $scope.editTitleSelected,
+        name: $scope.editNameSelected,
+        description: $scope.editDescriptionSelected,
+        type: "entry",
+        link: $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
+      }
+    }
+    // Reset params
+    $scope.indexParent = undefined;
+    $scope.currentParent = undefined;
+    $scope.indexSon = undefined;
+    $scope.currentSon = undefined;
+  }
+  //////////////////////////////////////////////////////////////////////////
 
   //////////////////DELETE ITEM/////////////////////////////////////////
   $scope.deleteItemPrev = function(n_parent, item, n_son, subitem){
@@ -188,23 +223,7 @@ uiModules
   }
   //////////////////////////////////////////////////////////////////////////
 
-  //Save Edit Item
-  $scope.saveEditItem = function(){
-    hideAllForms();
-    //Change new key and delete oldkey
-    if($scope.editTitleSelected != $scope.prevEditTitleSelected){
-      Object.defineProperty($scope.metadashboard, $scope.editTitleSelected,
-        Object.getOwnPropertyDescriptor($scope.metadashboard, $scope.prevEditTitleSelected));
-      delete $scope.metadashboard[$scope.prevEditTitleSelected];
-      return
-    }
-    //Check if it is a son or is a root item
-    if($scope.editParentSelected){
-      $scope.metadashboard[$scope.editParentSelected][$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
-      return
-    }
-    $scope.metadashboard[$scope.editTitleSelected] = $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1];
-  }
+
 
   //Export metadashboard to a JSON file
   $scope.exportJsonMetadashboard = function(){
