@@ -139,12 +139,13 @@ uiModules
 
   //////////////////////////////////////////////////////
 
-  //////////////////DELETE ITEM/////////////////////////////////////////
+  //////////////////EDIT ITEM/////////////////////////////////////////
   $scope.editItem = function(n_parent, item, n_son, subitem){
     hideAllForms();
     $scope.editItemForm = true;
     if(subitem){
       // Is a child so we have to define the parent
+      $scope.editingEntry = true;
       $scope.indexParent = n_parent;
       $scope.currentParent = item;
       $scope.indexSon = n_son;
@@ -156,6 +157,7 @@ uiModules
       return
     }
     // Is a parent just is a link
+    $scope.editingEntry = (item.type === "entry")
     $scope.indexParent = n_parent;
     $scope.currentParent = item;
     $scope.indexSon = undefined;
@@ -178,13 +180,19 @@ uiModules
         link: $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
       }
     }else{
-      $scope.metadashboard[$scope.indexParent] = {
+      let dashEdited = {
         title: $scope.editTitleSelected,
         name: $scope.editNameSelected,
         description: $scope.editDescriptionSelected,
-        type: "entry",
-        link: $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
       }
+      if ($scope.editingEntry) {
+        dashEdited.type = "entry";
+        dashEdited.link = $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
+      }else{
+        dashEdited.type = "menu";
+        dashEdited.dashboards = $scope.metadashboard[$scope.indexParent].dashboards
+      }
+      $scope.metadashboard[$scope.indexParent] = dashEdited
     }
     // Reset params
     $scope.indexParent = undefined;

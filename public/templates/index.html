@@ -51,7 +51,12 @@
             </h4>
         </div>
         <div ng-if="item.type === 'menu'">
-            <h4 class="list-group-item-heading"><b>{{item.title}} ({{n}})</b></h4>
+            <h4 class="list-group-item-heading"><b>{{item.title}} ({{n}})</b>
+              <a href="" ng-click="deleteItemPrev(n, item)" style="float: right"><i class="fa fa-trash"></i></a>
+              <a href="" ng-click="editItem(n, item)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
+              <a href="" ng-click="reorderItem(-1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-caret-up"></i></a>
+              <a href="" ng-click="reorderItem(1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-caret-down"></i></a>
+            </h4>
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="(n_son, subitem) in item.dashboards"><b>{{subitem.title}}</b> - <em>{{subitem.name}}</em>
                   <a href="" ng-click="deleteItemPrev(n, item, n_son, subitem)" style="float: right"><i class="fa fa-trash"></i></a>
@@ -139,7 +144,7 @@
                 <label for="editDescription">Description</label>
                 <input class="form-control" id="editDescription" ng-model="editDescriptionSelected" placeholder="Enter title">
               </div>
-              <div class="form-group">
+              <div class="form-group" ng-show="editingEntry">
                 <label for="exampleFormControlSelect1">Dashboard</label>
                 <select class="form-control" ng-model="editDashboardSelected">
                   <option ng-repeat="dash in dashboards" value="{{dash._id}}">{{dash._source.dashboard.title}}</option>
