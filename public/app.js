@@ -113,7 +113,7 @@ uiModules
       name: $scope.simpleNameSelected,
       description: $scope.simpleDescriptionSelected,
       type: "entry",
-      link: $scope.simpleDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
+      panel_id: $scope.simpleDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
     }
 
     // Adding to a parent
@@ -153,7 +153,7 @@ uiModules
       $scope.editTitleSelected = subitem.title;
       $scope.editNameSelected = subitem.name;
       $scope.editDescriptionSelected = subitem.description;
-      $scope.editDashboardSelected = "dashboard:" + subitem.link;
+      $scope.editDashboardSelected = "dashboard:" + subitem.panel_id;
       return
     }
     // Is a parent just is a link
@@ -165,7 +165,7 @@ uiModules
     $scope.editTitleSelected = item.title;
     $scope.editNameSelected = item.name;
     $scope.editDescriptionSelected = item.description;
-    $scope.editDashboardSelected = "dashboard:" + item.link;
+    $scope.editDashboardSelected = "dashboard:" + item.panel_id;
   }
 
   //Save Edit Item
@@ -177,7 +177,7 @@ uiModules
         name: $scope.editNameSelected,
         description: $scope.editDescriptionSelected,
         type: "entry",
-        link: $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
+        panel_id: $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
       }
     }else{
       let dashEdited = {
@@ -187,7 +187,7 @@ uiModules
       }
       if ($scope.editingEntry) {
         dashEdited.type = "entry";
-        dashEdited.link = $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
+        dashEdited.panel_id = $scope.editDashboardSelected.replace(/ /g,"-").split("dashboard:")[1]
       }else{
         dashEdited.type = "menu";
         dashEdited.dashboards = $scope.metadashboard[$scope.indexParent].dashboards
