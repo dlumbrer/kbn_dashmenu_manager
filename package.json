@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "repository": "github:dlumbrer/kbn_dashmenu_management",
   "kibana": {
-    "version": "6.1.0",
+    "version": "kibana",
     "templateVersion": "8.0.0"
   },
   "scripts": {
