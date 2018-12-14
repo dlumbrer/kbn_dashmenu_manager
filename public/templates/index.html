@@ -21,10 +21,8 @@
     </div>
   </div>
   <div class="row">
-    <div class="col-12-sm well">
-      <h1>{{ title }}</h1>
-      <p class="lead">{{ description }}</p>
-      <p>The current time is {{ currentTime }}</p>
+    <div class="col-12-sm">
+      <h1>{{ title }} <small style="color: gray">{{ description }}</small></h1>
     </div>
   </div>
   <hr>
@@ -34,9 +32,9 @@
     </div>
     <div class="col-md-4">  
       <button ng-click="updateMenu()" class="btn btn-success">Update menu</button>
+      <button ng-click="exportJsonMetadashboard()" class="btn btn-primary">Export JSON</button>
     </div>
   </div>
-  <hr>
   <div class="row">
     <div class="col-md-6">
       <h3>Current menu:</h3>
@@ -46,33 +44,28 @@
             <h4 class="list-group-item-heading"><b>{{item.title}} ({{n}})</b> - <em>{{item.name}}</em>
               <a href="" ng-click="deleteItemPrev(n, item)" style="float: right"><i class="fa fa-trash"></i></a>
               <a href="" ng-click="editItem(n, item)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
-              <a href="" ng-click="reorderItem(-1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-caret-up"></i></a>
-              <a href="" ng-click="reorderItem(1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-caret-down"></i></a>
+              <a href="" ng-click="reorderItem(-1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-arrow-up"></i></a>
+              <a href="" ng-click="reorderItem(1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-arrow-down"></i></a>
             </h4>
         </div>
         <div ng-if="item.type === 'menu'">
             <h4 class="list-group-item-heading"><b>{{item.title}} ({{n}})</b>
               <a href="" ng-click="deleteItemPrev(n, item)" style="float: right"><i class="fa fa-trash"></i></a>
               <a href="" ng-click="editItem(n, item)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
-              <a href="" ng-click="reorderItem(-1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-caret-up"></i></a>
-              <a href="" ng-click="reorderItem(1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-caret-down"></i></a>
+              <a href="" ng-click="reorderItem(-1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-arrow-up"></i></a>
+              <a href="" ng-click="reorderItem(1, item, n)" style="margin-right: 10px; float: right"><i class="fa fa-arrow-down"></i></a>
             </h4>
             <ul class="list-group">
                 <li class="list-group-item" ng-repeat="(n_son, subitem) in item.dashboards"><b>{{subitem.title}}</b> - <em>{{subitem.name}}</em>
                   <a href="" ng-click="deleteItemPrev(n, item, n_son, subitem)" style="float: right"><i class="fa fa-trash"></i></a>
                   <a href="" ng-click="editItem(n, item, n_son, subitem)" style="margin-right: 10px; float: right"><i class="fa fa-pencil"></i></a>
-                  <a href="" ng-click="reorderItem(-1, item, n, subitem, n_son)" style="margin-right: 10px; float: right"><i class="fa fa-caret-up"></i></a>
-                  <a href="" ng-click="reorderItem(1, item, n, subitem, n_son)" style="margin-right: 10px; float: right"><i class="fa fa-caret-down"></i></a>
+                  <a href="" ng-click="reorderItem(-1, item, n, subitem, n_son)" style="margin-right: 10px; float: right"><i class="fa fa-arrow-up"></i></a>
+                  <a href="" ng-click="reorderItem(1, item, n, subitem, n_son)" style="margin-right: 10px; float: right"><i class="fa fa-arrow-down"></i></a>
                 </li>
             </ul>
             <a ng-click="addItem(n, item)" class="list-group-item-text"><i class="fa fa-plus"></i> Add subitem to {{item.name}}</a>
         </div>
       </li>
-      <br>
-      <hr>
-      <h3>JSON format:</h3>
-      <button ng-click="exportJsonMetadashboard()" class="btn btn-primary" style="margin-bottom: 10px">Export JSON</button>
-      <pre>{{metadashboard | json}}</pre>
     </div>
     <div class="col-md-6">
         <div ng-show="simpleAdding">

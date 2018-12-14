@@ -327,8 +327,8 @@ uiModules
     });
   }
 
-  $scope.title = 'Custom menu manager';
-  $scope.description = 'kbn_dashmenu_management Plugin';
+  $scope.title = 'Menu manager';
+  $scope.description = 'Customize your navigation menu';
 
   const currentTime = moment($route.current.locals.currentTime);
   $scope.currentTime = currentTime.format('HH:mm:ss');
