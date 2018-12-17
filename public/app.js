@@ -310,11 +310,4 @@ uiModules
   $scope.title = 'Menu manager';
   $scope.description = 'Customize your navigation menu';
 
-  const currentTime = moment($route.current.locals.currentTime);
-  $scope.currentTime = currentTime.format('HH:mm:ss');
-  const unsubscribe = $interval(function () {
-    $scope.currentTime = currentTime.add(1, 'second').format('HH:mm:ss');
-  }, 1000);
-  $scope.$watch('$destroy', unsubscribe);
-
 });
