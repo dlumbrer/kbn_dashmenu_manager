@@ -30,7 +30,7 @@
       <h3>Current menu:</h3>
       <h4><a ng-click="addItem('', 'root')" class="list-group-item-heading" style="margin-bottom: 10px;"><i class="fa fa-plus"></i> Add root item</a></h4>
       <div style="max-height: 650px; overflow-y: auto">
-      <li class="list-group-item" ng-repeat="(n, item) in metadashboard">
+      <li class="list-group-item" ng-repeat="(n, item) in metadashboard" ng-class="{'moving-item':index == $index}">
         <div ng-if="item.type === 'entry'">
             <h4 class="list-group-item-heading"><b>{{item.title}}</b> - <em>{{item.name}}</em>
               <a href="" ng-click="deleteItemPrev(n, item)" style="float: right"><i class="fa fa-trash"></i></a>
@@ -61,7 +61,7 @@
     </div>
     <div class="col-md-6">
         <div ng-show="simpleAdding">
-            <button type="button" class="close" aria-label="Close" ng-click="simpleAdding = false">
+            <button type="button" class="close" aria-label="Close" ng-click="simpleAdding = false; index = undefined">
                 <span aria-hidden="true">&times;</span>
             </button>
             <h3>Add link item to {{currentParentName}}:</h3>
@@ -112,7 +112,7 @@
         </div>
 
         <div ng-show="editItemForm">
-          <button type="button" class="close" aria-label="Close" ng-click="editItemForm = false">
+          <button type="button" class="close" aria-label="Close" ng-click="editItemForm = false; index = undefined">
               <span aria-hidden="true">&times;</span>
           </button>
           <h3>Edit item:</h3>
@@ -140,12 +140,12 @@
         </div>
 
         <div ng-show="confirmDeleteForm">
-          <button type="button" class="close" aria-label="Close" ng-click="confirmDeleteForm = false">
+          <button type="button" class="close" aria-label="Close" ng-click="confirmDeleteForm = false; index = undefined">
               <span aria-hidden="true">&times;</span>
           </button>
           <h3>Are you sure you want to delete {{deleteSelected}} {{index_to_delete}}?</h3>
           <button ng-click="deleteEditItem()" class="btn btn-danger">Delete</button>
-          <button ng-click="confirmDeleteForm = false" class="btn">Cancel</button>
+          <button ng-click="confirmDeleteForm = false; index = undefined" class="btn">Cancel</button>
         </div>
     </div>
   </div>

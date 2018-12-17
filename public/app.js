@@ -37,6 +37,7 @@ uiModules
     $scope.complexAdding = false;
     $scope.confirmDeleteForm = false;
     $scope.editNotDict = false;
+    $scope.index = undefined;
   }
 
   /////
@@ -80,6 +81,7 @@ uiModules
       $scope.currentParentName = "root";
       $scope.complexAdding = true;
     }else{
+      $scope.index = n_parent;
       $scope.indexParent = n_parent;
       $scope.currentParentName = item.name;
       $scope.currentParent = item;
@@ -126,6 +128,7 @@ uiModules
   //////////////////EDIT ITEM/////////////////////////////////////////
   $scope.editItem = function(n_parent, item, n_son, subitem){
     hideAllForms();
+    $scope.index = n_parent;
     $scope.editItemForm = true;
     if(subitem){
       // Is a child so we have to define the parent
@@ -191,6 +194,7 @@ uiModules
   //////////////////DELETE ITEM/////////////////////////////////////////
   $scope.deleteItemPrev = function(n_parent, item, n_son, subitem){
     hideAllForms();
+    $scope.index = n_parent;
     $scope.confirmDeleteForm = true;
     //Check if dict in order to show the dashboard list
     $scope.editNotDict = (item.type === "entry")
@@ -222,6 +226,7 @@ uiModules
   /////////////////////////REORDER ITEM/////////////////////////////////////
 
   $scope.reorderItem = (i, item, n_parent, subitem, n_son) => {
+    
     if(subitem){
       if ($scope.metadashboard[n_parent].dashboards[n_son + i]){
         let item_aux = $scope.metadashboard[n_parent].dashboards[n_son + i];
@@ -230,6 +235,7 @@ uiModules
       }
       return
     }
+    $scope.index = n_parent + i;
     if ($scope.metadashboard[n_parent + i]) {
       let item_aux = $scope.metadashboard[n_parent + i];
       $scope.metadashboard[n_parent + i] = $scope.metadashboard[n_parent]
