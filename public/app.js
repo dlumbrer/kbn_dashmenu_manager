@@ -38,6 +38,10 @@ uiModules
     $scope.confirmDeleteForm = false;
     $scope.editNotDict = false;
     $scope.index = undefined;
+    $scope.simpleTitleSelected = undefined;
+    $scope.simpleTitleSelected = undefined;
+    $scope.simpleNameSelected = undefined;
+    $scope.simpleDescriptionSelected = undefined;
   }
 
   /////
@@ -103,11 +107,13 @@ uiModules
     if($scope.currentParentName !== "root"){
       $scope.metadashboard[$scope.indexParent].dashboards.push(dash)
       notify.info('Added ' + $scope.simpleTitleSelected + ' item at the end of ' + $scope.metadashboard[$scope.indexParent].title);
+      hideAllForms();
       return
     }
     //Adding to the root menu
     $scope.metadashboard.push(dash)
     notify.info('Added ' + $scope.simpleTitleSelected + ' item at the end of the menu');
+    hideAllForms();
   }
 
   // Add item that will have submenu
@@ -121,6 +127,7 @@ uiModules
     }
     $scope.metadashboard.push(dash)
     notify.info('Added ' + $scope.parentTitleSelected + ' item at the end of the menu');
+    hideAllForms();
   }
 
   //////////////////////////////////////////////////////
@@ -157,7 +164,6 @@ uiModules
 
   //Save Edit Item
   $scope.saveEditItem = function(){
-    hideAllForms();
     if ($scope.currentSon){
       $scope.metadashboard[$scope.indexParent].dashboards[$scope.indexSon] = {
         title: $scope.editTitleSelected,
@@ -188,6 +194,7 @@ uiModules
     $scope.currentParent = undefined;
     $scope.indexSon = undefined;
     $scope.currentSon = undefined;
+    hideAllForms()
   }
   //////////////////////////////////////////////////////////////////////////
 
@@ -212,7 +219,6 @@ uiModules
   }
 
   $scope.deleteEditItem = function(){
-    hideAllForms();
     if($scope.isSonToDelete){
       notify.info($scope.deleteSelected + " deleted from " + $scope.metadashboard[$scope.index_parent].title)
       $scope.metadashboard[$scope.index_parent].dashboards.splice($scope.index_to_delete, 1)
@@ -220,13 +226,14 @@ uiModules
     }
     notify.info($scope.deleteSelected + " deleted from the menu")
     $scope.metadashboard.splice($scope.index_to_delete, 1)
+    hideAllForms();
   }
   //////////////////////////////////////////////////////////////////////////
 
   /////////////////////////REORDER ITEM/////////////////////////////////////
 
   $scope.reorderItem = (i, item, n_parent, subitem, n_son) => {
-    
+    hideAllForms()
     if(subitem){
       if ($scope.metadashboard[n_parent].dashboards[n_son + i]){
         let item_aux = $scope.metadashboard[n_parent].dashboards[n_son + i];
